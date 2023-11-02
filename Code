@@ -1,0 +1,43 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+# data load using pandas
+data = pd.read_csv("/content/All ML.csv")
+
+#divide data set value for x,y variable and x reshape by(-1,1)
+working_hours = data['Working_hours'].values.reshape(-1,1)
+Ot_salary = data['Ot_salary'].values
+
+#transform the input data to iclude polynomial features of degree 2
+Polynomial_features = PolynomialFeatures(degree=2)
+Working_hours_poly = Polynomial_features.fit_transform(working_hours)
+
+#split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(Working_hours_poly, Ot_salary, test_size=0.2, random_state=42)
+
+#creating the model
+model = LinearRegression()
+
+#fit the data
+model.fit(X_train, y_train)
+
+#Predicting the Ot_salary
+predicted_train_Ot_salary = model.predict(X_train)
+predicted_test_Ot_salary = model.predict(X_test)
+
+#prin the pred value
+print("\033[1;33mPredicted:\033[0m", "\033[1;31m", predicted_train_Ot_salary, "\033[0m","\n")
+
+#plotting the results of dataset
+plt.figure(figsize=(10, 6))
+plt.style.use('dark_background')
+plt.scatter(working_hours, Ot_salary, color='blue', label='Actual Scores')
+plt.scatter(working_hours, model.predict(Working_hours_poly),color='red', label='Predicted score')
+plt.xlabel('Working Hours', color='white')
+plt.ylabel('Ot Salary', color='white')
+plt.title('Polynomial Regression (Degree=2)', color='white')
+plt.legend()
+plt.show()
